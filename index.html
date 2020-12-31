@@ -75,8 +75,15 @@
 
       var inputText = editor.getValue()
       var filteredData = parseData(inputText)
-      var outputString = "Number of bytes = " + filteredData.length + "\n"
-      outputString +=  "bytes : " + filteredData.join(', ') + "\n"
+      var outputString = "Number of bytes = " + filteredData.length + "\n\n"
+
+      outputString += "index : "
+
+      for(var i = 0 ; i < filteredData.length ; i++){
+        outputString += i.toString().padEnd(filteredData[i].length + 2)
+      }
+      outputString += "\n"
+      outputString +=  "bytes : " + filteredData.join(', ') + "\n\n"
       var result = CRCCCITT(filteredData, 0xffff)
 
       outputString += "result : "
