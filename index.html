@@ -72,19 +72,30 @@
     editor.getSession().on('change', changed)
 
     function changed(e) {
+      var length = editor.session.getLength()
+      var tokens = []
+      for(var i = 0 ; i < length ; i++){
 
-      var inputText = editor.getValue()
-      var filteredData = parseData(inputText)
-      var outputString = "Number of bytes = " + filteredData.length + "\n\n"
+        tokensInLine = editor.session.getTokens(i).filter(x =>         
+          (x.type === "constant.numeric") && 
+          (x.value.replace(/[UuLl]/,'') <= 255) &&
+          (x.value.replace(/[UuLl]/,'') >= 0));
+
+        if(tokensInLine.length != 0)
+          tokens = tokens.concat(tokensInLine)
+      }
+
+      var outputString = "Number of bytes = " + tokens.length + "\n\n"
 
       outputString += "index : "
 
-      for(var i = 0 ; i < filteredData.length ; i++){
-        outputString += i.toString().padEnd(filteredData[i].length + 2)
+      bytesValue = tokens.map(x=>x.value)
+      for(var i = 0 ; i < bytesValue.length ; i++){
+        outputString += i.toString().padEnd(bytesValue[i].length + 2)
       }
       outputString += "\n"
-      outputString +=  "bytes : " + filteredData.join(', ') + "\n\n"
-      var result = CRCCCITT(filteredData, 0xffff)
+      outputString +=  "bytes : " + bytesValue.join(', ') + "\n\n"
+      var result = CRCCCITT(bytesValue, 0xffff)
 
       outputString += "result : "
       outputString += "0x" + ((result >> 8) & 0xff).toString(16).padStart(2, '0').toUpperCase()
@@ -95,6 +106,4 @@
 
     </script>
 </body>
-
-
 </html>
